@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Muse Studio | Text Creation Studio</title>
+<style>
+:root{
+  --pink:#f9e7ec;--cream:#fffafa;--ink:#432b3b;--muted:#806675;
+  --line:#e6c5cf;--accent:#6a4055;--white:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#fbfaff 0%,#f8f6fb 52%,#fdf9fb 100%);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:1320px;margin:auto;padding:22px}
+.header{position:relative;overflow:hidden;background:radial-gradient(circle at 50% -10%,rgba(255,220,235,.72) 0%,rgba(255,255,255,.96) 32%,rgba(255,255,255,.92) 72%);border:1px solid #eee8ef;border-radius:24px;padding:20px 25px 20px;box-shadow:0 10px 32px rgba(67,43,59,.065)}
+.header:before{content:"";position:absolute;left:8%;right:8%;top:-65px;height:135px;background:radial-gradient(ellipse,rgba(246,196,214,.42),rgba(246,196,214,0) 70%);pointer-events:none}
+.brand{position:relative;z-index:1;text-align:center}.sparkle{font-size:28px;line-height:1;margin:0 0 5px;filter:drop-shadow(0 2px 5px rgba(230,170,75,.22))}
+.brand-name{ text-shadow:0 1px 10px rgba(211,154,177,.16)}
+.brand-title{text-shadow:0 2px 16px rgba(211,154,177,.12)}
+.brand{text-align:center}
+.brand-name{
+  margin:0 0 2px;font-family:Georgia,serif;font-size:15px;
+  font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#886071
+}
+.brand-title{
+  margin:0;font-family:Georgia,serif;font-size:43px;line-height:1.05;
+  letter-spacing:1px;color:var(--ink)
+}
+.tagline{margin:8px 0 17px;color:var(--muted);font-size:15px}
+.actions{position:relative;z-index:1;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
+button{
+  border:1px solid #d9b4c1;background:white;color:var(--ink);
+  border-radius:11px;padding:10px 14px;font-weight:700;cursor:pointer
+}
+button:hover{filter:brightness(.98);transform:translateY(-1px)}
+.primary{background:var(--accent);color:white;border-color:var(--accent)}
+.layout{
+  display:grid;grid-template-columns:minmax(0,1fr) 370px;
+  gap:18px;margin-top:18px;align-items:start
+}
+.card{background:rgba(255,255,255,.95);border:1px solid #eee8ef;border-radius:22px;padding:20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(67,43,59,.055)}
+.card h2{margin:0 0 15px;font-family:Georgia,serif;font-size:23px;color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field label{
+  display:block;margin-bottom:6px;font-size:11px;font-weight:800;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--muted)
+}
+input,select{
+  width:100%;height:43px;border:1px solid #d9c0c9;border-radius:11px;
+  background:white;padding:10px 12px;font:inherit;color:var(--ink);outline:none
+}
+input:focus,select:focus{border-color:#ad6d84;box-shadow:0 0 0 3px #f2d9e0}
+.custom{display:none;margin-top:7px}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.check{
+  border:1px solid #e0c7d0;background:white;border-radius:10px;
+  padding:8px 10px;font-size:13px
+}
+.check input{width:auto;height:auto;margin-right:5px}
+.sidebar{min-width:0;display:flex;flex-direction:column;gap:0}
+.summary{min-height:105px;line-height:1.55;font-size:13px;color:#604d59}
+.prompt{
+  min-height:265px;background:white;border:1px solid #ead4db;
+  border-radius:13px;padding:15px;line-height:1.6;font-size:13px;
+  white-space:pre-wrap;color:#4d3945
+}
+.note{font-size:11px;color:#8a707c;margin:9px 0 0}.smart-note{margin-top:11px;text-align:center;font-size:11px;color:#8d7782}.variation-card .range-wrap{padding-top:2px}.range-wrap{padding:8px 4px 0}.range-wrap input[type=range]{width:100%;accent-color:#e63b7a}.range-labels{display:flex;justify-content:space-between;color:#a19aa3;font-size:11px;margin-top:3px}.range-value{margin-top:7px;font-size:12px;font-weight:700;color:#6d5964}
+.quality-row{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:#5c4b57;margin-bottom:8px}
+.quality-bar{height:9px;border-radius:99px;background:#e8e8ec;overflow:hidden}
+.quality-bar span{display:block;height:100%;width:0;background:#e63b7a;border-radius:99px;transition:width .25s ease}
+.suggestions p{margin:0 0 9px;color:#74717a;font-size:13px;line-height:1.45}
+.suggestions p:last-child{margin-bottom:0}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-title-row h2{margin-bottom:0}
+.mini-btn{font-size:11px;padding:7px 9px;border-radius:9px;background:#fff;border-color:#ead7df}
+.saved-list{margin-top:14px;color:#9a96a0;font-size:13px;line-height:1.45}
+.prompt-variation{padding:10px 0;margin-bottom:10px;border-bottom:1px solid #eee5ea}.prompt-variation:last-child{border-bottom:0;margin-bottom:0}.saved-item{padding:9px 10px;border:1px solid #eee5ea;border-radius:10px;background:#fff;margin-bottom:8px;color:#5c4b57}
+
+@media(max-width:950px){
+  .layout{grid-template-columns:650px 350px;overflow-x:auto;padding-bottom:15px}
+  .brand-title{font-size:36px}
+}
+@media(max-width:650px){
+  .wrap{padding:10px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="header">
+  <div class="brand">
+    <div class="sparkle">✦ ✨</div>
+    <div class="brand-name">Digital Muse Studio</div>
+    <h1 class="brand-title">TEXT CREATION STUDIO</h1>
+    <p class="tagline">Create powerful, creative prompts for your art</p>
+  </div>
+  <div class="actions">
+    <button onclick="document.getElementById('text').focus()">✦ Text</button>
+    <button onclick="randomize()">🎲 Smart Randomize</button>
+    <button onclick="clearAll()">↻ Reset</button>
+    <button class="primary" onclick="generate()">✨ Generate Prompt</button>
+  </div>
+  <div class="smart-note">✨ Smart Randomize builds a coordinated design direction instead of mixing unrelated choices.</div>
+</header>
+
+<div class="layout">
+
+<main>
+<section class="card">
+<h2>Basic Design</h2>
+<div class="grid">
+<div class="field"><label>Text / Phrase</label><input id="text" placeholder="Enter your phrase..."></div>
+<div class="field"><label>Design Type</label><select id="type"><option value="">— Select —</option><option>Typography design</option><option>Quote design</option><option>Word art</option><option>Statement graphic</option><option>Sticker design</option><option>Shirt graphic</option></select></div>
+<div class="field"><label>Element / Subject</label><input id="subject" placeholder="Optional subject or theme..."></div>
+
+</div>
+</section>
+
+<section class="card">
+<h2>Typography</h2>
+<div class="grid">
+<div class="field"><label>Text Effects</label><select id="effect"><option value="">— Select —</option><option>Bubble / puffy</option><option>Shadow 3D</option><option>3D block</option><option>High gloss</option><option>Metallic</option><option>Chrome</option><option>Vintage distressed</option><option>Embroidered</option><option>Neon glow</option><option>Retro 70s</option><option>Graffiti streetwear</option><option>Sticker letters</option><option>Gel / jelly</option><option>Outline / stroke</option></select></div>
+<div class="field"><label>Text Spacing</label><select id="spacing"><option value="">— Select —</option><option>Tight</option><option>Balanced</option><option>Wide</option><option>Extra wide</option></select></div>
+<div class="field"><label>Word Shape</label><select id="shape"><option value="">— Select —</option><option>Arched</option><option>Wavy</option><option>Circular</option><option>Heart shaped</option><option>Diagonal</option><option>Freeform</option></select></div>
+<div class="field"><label>Lettering Style</label><select id="letter"><option value="">— Select —</option><option>Bold playful</option><option>Elegant</option><option>Luxury serif</option><option>Chunky</option><option>Retro</option><option>Streetwear</option><option>Kawaii</option><option>Handwritten</option></select></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Let's Style It</h2>
+<div class="grid">
+<div class="field"><label>Color Scheme</label><select id="color"><option value="">— Select —</option><option>Bright & bold</option><option>Pastel</option><option>Neon</option><option>Rainbow</option><option>Monochrome</option><option>Earth tones</option><option>Jewel tones</option><option>Metallic</option><option>Black & white</option><option>Purple & gold</option><option>Pink & cream</option><option>Custom value...</option></select><input class="custom" id="colorCustom" placeholder="Enter custom color scheme..."></div>
+<div class="field"><label>Material / Texture</label><select id="material"><option value="">— Select —</option>
+<option>Faux fur</option><option>Sherpa</option><option>Velvet</option><option>Chenille</option><option>Felt</option><option>Satin</option><option>Silk</option><option>Crochet</option><option>Knitted</option><option>Corduroy</option><option>Suede</option><option>Canvas</option><option>Denim</option><option>Leather</option><option>Rubber</option><option>Foam</option><option>Glass</option><option>Frosted glass</option><option>Ceramic</option><option>Porcelain</option><option>Marble</option><option>Concrete</option><option>Wood</option><option>Cork</option><option>Bamboo</option><option>Paper</option><option>Cardboard</option><option>Paper mache</option><option>Jelly</option><option>Slime</option><option>Liquid</option><option>Chrome</option><option>Brushed metal</option><option>Gold</option><option>Silver</option><option>Copper</option><option>Brass</option><option>Sequins</option><option>Rhinestones</option><option>Crystals</option><option>Pearls</option><option>Iridescent</option><option>Holographic</option><option>Pearlescent</option><option>Opalescent</option><option>Custom value...</option></select><input class="custom" id="materialCustom" placeholder="Enter custom material..."></div>
+<div class="field"><label>Effects</label><select id="finish"><option value="">— Select —</option><option>Glossy</option><option>Glittery</option><option>Shimmer</option><option>Sparkling</option><option>Embossed</option><option>Raised 3D</option><option>Glow</option><option>Shadowed</option><option>Foil stamped</option><option>Distressed</option></select></div>
+<div class="field"><label>Background</label><select id="background"><option value="">— Select —</option><option>Transparent</option><option>Plain white</option><option>Plain black</option><option>Solid color</option><option>Gradient</option><option>Textured</option><option>Patterned</option><option>Cream</option><option>Pastel pink</option></select></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Composition & Output</h2>
+<div class="grid">
+<div class="field"><label>Composition</label><select id="composition"><option value="">— Select —</option><option>Centered</option><option>Stacked</option><option>Layered</option><option>Diagonal</option><option>Scattered</option><option>Border</option><option>Repeating pattern</option><option>Symmetrical</option></select></div>
+<div class="field"><label>Aspect Ratio</label><select id="ratio"><option value="">— Select —</option><option>1:1</option><option>3:4</option><option>4:5</option><option>9:16</option><option>16:9</option><option>2:3</option><option>5:4</option><option>Custom value...</option></select><input class="custom" id="ratioCustom" placeholder="Enter custom ratio..."></div>
+<div class="field"><label>Mockup View</label><select id="mockup"><option value="">— Select —</option><option>None</option><option>T-shirt</option><option>Hoodie</option><option>Crewneck</option><option>Mug</option><option>Tote bag</option><option>Sticker sheet</option></select></div>
+<div class="field"><label>Print Finish</label><select id="print"><option value="">— Select —</option><option>Print-ready crisp edges</option><option>Transparent-background artwork</option><option>DTF-friendly high contrast</option><option>DTG-friendly detail</option><option>Sticker-cut ready</option><option>Premium detail</option></select></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Extras</h2>
+<p class="note" style="margin-top:-7px;margin-bottom:15px">Optional finishing details — choose only what you want included.</p>
+<div class="grid">
+
+<div class="field"><label>Icon Elements</label>
+<select id="icons"><option value="">— Select —</option>
+<option>Sparkles</option><option>Hearts</option><option>Stars</option><option>Bows</option><option>Butterflies</option><option>Diamonds</option><option>Roses</option><option>Money symbols</option><option>Music notes</option><option>Flowers</option><option>Clouds</option><option>Sunbursts</option><option>Leopard print accents</option><option>Autumn leaves</option><option>Seasonal elements</option><option>Mixed decorative icons</option><option>Custom value...</option></select>
+<input class="custom" id="iconsCustom" placeholder="Enter custom icon elements..."></div>
+
+<div class="field"><label>Add-Ons</label>
+<select id="addonsSelect"><option value="">— Select —</option>
+<option>Rhinestone accents</option><option>Distressed texture</option><option>Thick outline</option><option>Sparkle accents</option><option>Glitter details</option><option>Shadow accents</option><option>Stitched details</option><option>Retro halftone</option><option>Checkerboard</option><option>Animal print</option><option>Gold shimmer</option><option>Sticker border</option><option>Vintage grain</option><option>Foil accents</option><option>Custom value...</option></select>
+<input class="custom" id="addonsSelectCustom" placeholder="Enter custom add-on..."></div>
+
+<div class="field"><label>Mascot Add-Ons</label>
+<select id="mascot"><option value="">— Select —</option>
+<option>None</option><option>Pumpkin</option><option>Bear</option><option>Bunny</option><option>Coffee mascot</option><option>Cowgirl mascot</option><option>Chibi mascot</option><option>Custom mascot...</option></select>
+<input class="custom" id="mascotCustom" placeholder="Describe the mascot..."></div>
+
+<div class="field"><label>Mascot Alignment</label>
+<select id="mascotAlign"><option value="">— Select —</option>
+<option>None</option><option>Left</option><option>Right</option><option>Above text</option><option>Below text</option><option>Behind text</option><option>Wrapped around text</option><option>Integrated with lettering</option></select></div>
+
+<div class="field"><label>Character / Figure Add-Ons</label>
+<select id="figure"><option value="">— Select —</option>
+<option>None</option><option>Bratz-style chibi figure</option><option>Cowgirl</option><option>Cute mom</option><option>Girl boss</option><option>Autumn girl</option><option>Character holding accessory</option><option>Character interacting with lettering</option><option>Custom figure...</option></select>
+<input class="custom" id="figureCustom" placeholder="Describe the figure..."></div>
+
+<div class="field"><label>Framing</label>
+<select id="framing"><option value="">— Select —</option>
+<option>None</option><option>Thin border</option><option>Thick border</option><option>Badge frame</option><option>Oval frame</option><option>Circle frame</option><option>Sticker-cut frame</option><option>Ornamental frame</option><option>Floral frame</option><option>Retro frame</option></select></div>
+
+<div class="field"><label>Decorative Details</label>
+<select id="details"><option value="">— Select —</option>
+<option>None</option><option>Floating sparkle dust</option><option>Small stars</option><option>Glow accents</option><option>Confetti</option><option>Ribbon details</option><option>Drips</option><option>Swirls</option><option>Mini hearts</option><option>Subtle decorative accents</option></select></div>
+
+<div class="field"><label>Quality / Finish</label>
+<select id="quality"><option value="">— Select —</option>
+<option>Print-ready crisp edges</option><option>Transparent-background artwork</option><option>DTF-friendly high contrast</option><option>DTG-friendly detail</option><option>Sticker-cut ready</option><option>Premium soft texture</option><option>Distressed vintage finish</option><option>No special finish</option></select></div>
+
+</div>
+<div class="field" style="margin-top:13px"><label>Exclude</label>
+<input id="exclude" placeholder="Anything you do NOT want included..."></div>
+</section>
+</main>
+
+<aside class="sidebar">
+<section class="card">
+<h2>✨ Your Selections</h2>
+<div id="summary" class="summary">Nothing selected yet.</div>
+</section>
+
+<section class="card variation-card">
+<h2>Variations</h2>
+<div class="range-wrap">
+  <input id="variations" type="range" aria-label="Number of variations" min="1" max="4" step="1" value="1">
+  <div class="range-labels"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+  <div class="range-value"><span id="variationValue">4</span> variation<span id="variationPlural">s</span></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Generated Prompt</h2>
+<div id="prompt" class="prompt">Your finished prompt will appear here.</div>
+<button class="primary" style="margin-top:12px" id="copyPromptBtn" onclick="copyPrompt()">Copy Prompt</button>
+<p class="note">Choose your settings, then tap Generate Prompt.</p>
+</section>
+
+<section class="card quality-card">
+  <h2>Prompt Quality</h2>
+  <div class="quality-row"><span id="qualityLabel">—</span><span id="qualityScore">0%</span></div>
+  <div class="quality-bar"><span id="qualityFill"></span></div>
+  <p class="note" id="qualityHint">Start selecting options to build a stronger prompt.</p>
+</section>
+
+<section class="card">
+  <h2>💡 Suggestions</h2>
+  <div id="suggestions" class="suggestions">
+    <p>💡 Try adding a typography effect for more visual direction.</p>
+    <p>💡 A material or texture can make the lettering feel more dimensional.</p>
+    <p>💡 Add composition and output details when you want a production-ready prompt.</p>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-title-row"><h2>💗 Favorites</h2><button class="mini-btn" onclick="saveFavorite()">Save Current</button></div>
+  <div id="favorites" class="saved-list">No favorites yet.</div>
+</section>
+
+<section class="card">
+  <div class="card-title-row"><h2>◷ History</h2><button class="mini-btn" onclick="clearHistory()">Clear</button></div>
+  <div id="history" class="saved-list">No history yet.</div>
+</section>
+</aside>
+
+</div>
+</div>
+
+<script>
+const ids=['text','type','subject','effect','spacing','shape','letter','color','material','finish','background','composition','ratio','mockup','print','icons','addonsSelect','mascot','mascotAlign','figure','framing','details','quality','exclude'];
+const labels={text:'Text',type:'Design Type',subject:'Element / Subject',variations:'Variations',effect:'Text Effects',spacing:'Text Spacing',shape:'Word Shape',letter:'Lettering Style',color:'Color Scheme',material:'Material / Texture',finish:'Effects',background:'Background',composition:'Composition',ratio:'Aspect Ratio',mockup:'Mockup View',print:'Print Finish',icons:'Icon Elements',addonsSelect:'Add-Ons',mascot:'Mascot Add-Ons',mascotAlign:'Mascot Alignment',figure:'Character / Figure Add-Ons',framing:'Framing',details:'Decorative Details',quality:'Quality / Finish',exclude:'Exclude'};
+
+function value(id){
+ const e=document.getElementById(id);
+ if(!e || !e.value)return '';
+ if(['color','material','ratio','icons','addonsSelect','mascot','figure'].includes(id) && /Custom/i.test(e.value)){
+   const c=document.getElementById(id+'Custom');
+   return c && c.value.trim() ? c.value.trim() : '';
+ }
+ return e.value;
+}
+
+function selections(){
+  const o={};
+  ids.forEach(id=>{
+    const e=document.getElementById(id);
+    if(!e) return;
+    const v=value(id);
+    if(v) o[labels[id]]=v;
+  });
+  return o;
+}
+
+function update(){
+  const o=selections();
+  const keys=Object.keys(o);
+  const summary=document.getElementById('summary');
+  if(summary) summary.innerHTML=keys.length
+    ? keys.map(k=>'<b>'+escapeHtml(k)+':</b> '+escapeHtml(o[k])).join('<br>')
+    : 'Nothing selected yet.';
+  updateQuality(o);
+}
+
+function escapeHtml(v){
+  return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+function getVariationCount(){
+  const slider=document.getElementById('variations');
+  if(!slider) return 1;
+  return Math.max(1,Math.min(4,Number(slider.value)||1));
+}
+
+function updateVariationUI(){
+  const n=getVariationCount();
+  const out=document.getElementById('variationCount');
+  if(out) out.textContent=n+(n===1?' variation':' variations');
+  document.querySelectorAll('[data-variation-number]').forEach(el=>{
+    el.classList.toggle('active',Number(el.dataset.variationNumber)===n);
+  });
+  update();
+}
+
+function updateQuality(o){
+  const total=Math.max(1,ids.length-1);
+  const count=Object.keys(o).filter(k=>k!=='Exclude').length;
+  const score=Math.min(100,Math.round((count/total)*100));
+  const label=score>=80?'Excellent':score>=55?'Strong':score>=30?'Good':'Getting started';
+  const scoreEl=document.getElementById('qualityScore');
+  const labelEl=document.getElementById('qualityLabel');
+  const fill=document.getElementById('qualityFill');
+  const hint=document.getElementById('qualityHint');
+  if(scoreEl) scoreEl.textContent=score+'%';
+  if(labelEl) labelEl.textContent=score?label:'—';
+  if(fill) fill.style.width=score+'%';
+  if(hint) hint.textContent=score>=80
+    ?'Your prompt has strong creative and production direction.'
+    :score>=55
+    ?'Nice foundation. Add a few more visual details for a richer prompt.'
+    :score>=30
+    ?'Add typography, style, composition, or output choices to strengthen it.'
+    :'Start selecting options to build a stronger prompt.';
+  updateSuggestions(o);
+}
+
+function updateSuggestions(o){
+  const el=document.getElementById('suggestions');
+  if(!el) return;
+  const suggestions=[];
+  if(!o['Text Effects']) suggestions.push('💡 Try adding a typography effect for more visual direction.');
+  if(!o['Material / Texture']) suggestions.push('💡 A material or texture can make the lettering feel more dimensional.');
+  if(!o['Composition']) suggestions.push('💡 Add a composition choice to control how the design is arranged.');
+  if(!o['Color Scheme']) suggestions.push('💡 Choose a color scheme so the visual style is easier for the AI to follow.');
+  if(!o['Print Finish']) suggestions.push('💡 Add a print/output finish when you want a production-ready prompt.');
+  if(!suggestions.length) suggestions.push('💡 Your prompt is well directed — try Generate Prompt to see the finished result.');
+  el.innerHTML=suggestions.slice(0,3).map(x=>'<p>'+x+'</p>').join('');
+}
+
+function buildPrompt(o, variationNumber){
+  let s=o.Text
+    ? `Create a professional POD-ready text design featuring the phrase "${o.Text}". `
+    : 'Create a professional POD-ready text design. ';
+
+  const add=(key,txt)=>{if(o[key]) s+=txt+o[key]+'. '};
+  add('Design Type','Design type: ');
+  add('Element / Subject','Theme/subject: ');
+  add('Text Effects','Typography effect: ');
+  add('Lettering Style','Lettering style: ');
+  add('Text Spacing','Spacing: ');
+  add('Word Shape','Word arrangement: ');
+  add('Color Scheme','Color palette: ');
+  add('Material / Texture','Material/texture: ');
+  add('Effects','Finish/effects: ');
+  add('Composition','Composition: ');
+  add('Background','Background: ');
+  add('Icon Elements','Icon elements: ');
+  add('Add-Ons','Add-ons: ');
+  add('Mascot Add-Ons','Mascot: ');
+  add('Mascot Alignment','Mascot placement: ');
+  add('Character / Figure Add-Ons','Figure add-on: ');
+  add('Framing','Framing: ');
+  add('Decorative Details','Decorative details: ');
+  add('Quality / Finish','Quality/finish: ');
+  add('Aspect Ratio','Aspect ratio: ');
+
+  if(o['Mockup View'] && o['Mockup View']!=='None')
+    s+=`Show the finished design on a ${o['Mockup View']} mockup. `;
+  if(o.Exclude) s+=`Avoid: ${o.Exclude}. `;
+
+  // IMPORTANT: variation is part of the generated prompt itself.
+  if(variationNumber===1){
+    s+='Create the primary design direction while preserving the selected phrase and all chosen visual requirements. ';
+  } else {
+    s+=`Variation ${variationNumber}: create a distinct creative interpretation of the same design while preserving the exact phrase, required selections, and overall concept. Change secondary visual treatment, arrangement, or supporting details without changing the core wording. `;
+  }
+
+  s+='Clean hierarchy, intentional spacing, crisp edges, polished professional finish, cohesive details, no unwanted text.';
+  return s;
+}
+
+function generate(){
+  const o=selections();
+  const promptEl=document.getElementById('prompt');
+  if(!promptEl) return;
+
+  if(!Object.keys(o).length){
+    promptEl.textContent='Choose at least a few settings first, then generate your prompt.';
+    update();
+    return;
+  }
+
+  const n=getVariationCount();
+  const prompts=[];
+  for(let i=1;i<=n;i++) prompts.push(buildPrompt(o,i));
+
+  // The selected variation count is embedded in the actual generated prompt.
+  const header=`${n===1?'PRIMARY PROMPT':n+' PROMPT VARIATIONS'}\n\n`;
+  promptEl.textContent=header+prompts.map((x,i)=>
+    n===1 ? x : `VARIATION ${i+1}:\n${x}`
+  ).join(n===1?'':'\n\n');
+
+  update();
+}
+
+function copyPrompt(){
+  const text=(document.getElementById('prompt')||{}).textContent||'';
+  if(!text || text==='Your finished prompt will appear here.') return;
+  const done=()=>{
+    const btn=document.getElementById('copyPromptBtn');
+    if(btn){
+      const old=btn.innerHTML;
+      btn.innerHTML='✓ Copied!';
+      setTimeout(()=>btn.innerHTML=old,1200);
+    }
+  };
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done));
+  } else fallbackCopy(text,done);
+}
+
+function fallbackCopy(text,done){
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.position='fixed';
+  ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try{document.execCommand('copy'); done();}finally{ta.remove();}
+}
+
+function clearAll(){
+  // TRUE RESET: inputs, selects, custom fields, checkboxes, variation slider,
+  // generated output, summary, quality, favorites/history remain stored.
+  ids.forEach(id=>{
+    const e=document.getElementById(id);
+    if(!e) return;
+    if(e.tagName==='SELECT') e.selectedIndex=0;
+    else if(e.type==='checkbox' || e.type==='radio') e.checked=false;
+    else e.value='';
+  });
+
+  document.querySelectorAll('.custom').forEach(x=>{
+    x.value='';
+    x.style.display='none';
+  });
+
+  // Reset every multi-select checkbox/pill if the current build uses them.
+  document.querySelectorAll('input[type="checkbox"],input[type="radio"]').forEach(x=>x.checked=false);
+
+  const slider=document.getElementById('variations');
+  if(slider) slider.value='1';
+
+  const count=document.getElementById('variationCount');
+  if(count) count.textContent='1 variation';
+
+  const prompt=document.getElementById('prompt');
+  if(prompt) prompt.textContent='Your finished prompt will appear here.';
+
+  const summary=document.getElementById('summary');
+  if(summary) summary.textContent='Nothing selected yet.';
+
+  document.querySelectorAll('[data-variation-number]').forEach(el=>{
+    el.classList.toggle('active',el.dataset.variationNumber==='1');
+  });
+
+  update();
+}
+
+function smartRandomChoice(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+function randomize(){
+  // Smart themed randomization: choose a cohesive design direction first,
+  // then pull compatible options from that direction.
+  const themes=[
+    {
+      type:'Typography design', effect:'Bubble / puffy', letter:'Bold playful',
+      color:'Pastel', material:'Jelly', finish:'Glossy', background:'Transparent',
+      composition:'Centered', framing:'Sticker-cut frame', quality:'DTF-friendly high contrast',
+      details:'Floating sparkle dust'
+    },
+    {
+      type:'Quote design', effect:'High gloss', letter:'Elegant',
+      color:'Pink & cream', material:'Velvet', finish:'Shimmer',
+      background:'Cream', composition:'Centered', framing:'Thin border',
+      quality:'Print-ready crisp edges', details:'Subtle decorative accents'
+    },
+    {
+      type:'Statement graphic', effect:'Metallic', letter:'Luxury serif',
+      color:'Purple & gold', material:'Brushed metal', finish:'Chrome finish',
+      background:'Transparent', composition:'Stacked', framing:'Badge frame',
+      quality:'DTF-friendly high contrast', details:'Small stars'
+    },
+    {
+      type:'Word art', effect:'Vintage distressed', letter:'Retro',
+      color:'Earth tones', material:'Canvas', finish:'Weathered',
+      background:'Plain white', composition:'Layered', framing:'Retro frame',
+      quality:'Distressed vintage finish', details:'Vintage grain'
+    }
+  ];
+
+  const theme=smartRandomChoice(themes);
+  Object.entries(theme).forEach(([id,val])=>{
+    const e=document.getElementById(id);
+    if(e) e.value=val;
+  });
+
+  // Never randomize the user's phrase.
+  // Reset custom inputs so they cannot conflict with the smart selections.
+  document.querySelectorAll('.custom').forEach(x=>{x.value='';x.style.display='none';});
+
+  // Keep variation count meaningful and user-controlled; don't overwrite it.
+  update();
+  generate();
+}
+
+function saveFavorite(){
+  const p=document.getElementById('prompt').textContent;
+  if(!p || p==='Your finished prompt will appear here.') return;
+  const arr=JSON.parse(localStorage.getItem('dms_text_favorites')||'[]');
+  arr.unshift(p);
+  localStorage.setItem('dms_text_favorites',JSON.stringify(arr.slice(0,8)));
+  renderFavorites();
+}
+
+function renderFavorites(){
+  const arr=JSON.parse(localStorage.getItem('dms_text_favorites')||'[]');
+  const el=document.getElementById('favorites');
+  if(!el) return;
+  el.innerHTML=arr.length
+    ? arr.map((x,i)=>`<div class="saved-item"><b>${i+1}.</b> ${escapeHtml(x.slice(0,180))}${x.length>180?'…':''}</div>`).join('')
+    : 'No favorites yet.';
+}
+
+// History is intentionally NOT persisted in this Text Creation Studio.
+// Clear any legacy history created by an earlier prototype and always show an empty box.
+function renderHistory(){
+  const el=document.getElementById('history');
+  if(el) el.innerHTML='No history yet.';
+}
+
+function clearHistory(){
+  localStorage.removeItem('dms_text_history');
+  renderHistory();
+}
+
+document.querySelectorAll('input,select').forEach(e=>{
+  e.addEventListener('input',()=>{
+    update();
+  });
+  e.addEventListener('change',()=>{
+    if(['color','material','ratio','icons','addonsSelect','mascot','figure'].includes(e.id)){
+      const c=document.getElementById(e.id+'Custom');
+      if(c)c.style.display=(e.value==='Custom value...' || e.value.endsWith('...'))?'block':'none';
+    }
+    update();
+  });
+});
+
+const variationSlider=document.getElementById('variations');
+if(variationSlider){
+  variationSlider.min='1';
+  variationSlider.max='4';
+  variationSlider.step='1';
+  variationSlider.value='1';
+  variationSlider.addEventListener('input',updateVariationUI);
+  variationSlider.addEventListener('change',updateVariationUI);
+}
+
+document.querySelectorAll('[data-variation-number]').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const slider=document.getElementById('variations');
+    if(slider){
+      slider.value=el.dataset.variationNumber;
+      updateVariationUI();
+    }
+  });
+});
+
+try{localStorage.removeItem('dms_text_history');}catch(e){}
+renderFavorites();
+renderHistory();
+updateVariationUI();
+</script>
+</body>
+</html>
