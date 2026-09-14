@@ -84,9 +84,36 @@ input:focus,select:focus{border-color:#ad6d84;box-shadow:0 0 0 3px #f2d9e0}
   .wrap{padding:10px}
   .grid{grid-template-columns:1fr}
 }
+
+/* Private access wall */
+body.locked > *:not(#accessWall){display:none!important}
+#accessWall{display:none;position:fixed;inset:0;z-index:99999;align-items:center;justify-content:center;padding:22px;background:linear-gradient(135deg,#fbfaff,#f8f1f7 55%,#eee7f8)}
+body.locked #accessWall{display:flex}
+.access-box{width:min(460px,100%);background:#fff;border:1px solid #eadbe5;border-radius:24px;padding:30px;box-shadow:0 18px 55px rgba(67,43,59,.14);text-align:center}
+.access-box h2{margin:0 0 10px;font-family:Georgia,serif;color:#432b3b;font-size:27px}
+.access-box p{color:#806675;line-height:1.55;font-size:14px}
+.access-box input{margin-top:10px;text-align:center;letter-spacing:1px}
+.access-box button{margin-top:12px;width:100%;background:#6a4055;color:#fff;border-color:#6a4055}
+.access-error{min-height:18px;margin-top:10px;color:#b33b65;font-size:13px}
+.access-link{display:inline-block;margin-top:14px;color:#6a4055;font-weight:700;font-size:13px}
+.access-small{font-size:11px!important;color:#9a8792!important;margin-top:16px!important}
+
 </style>
 </head>
-<body>
+<body class="locked">
+<div id="accessWall" aria-modal="true" role="dialog">
+  <div class="access-box">
+    <div style="font-size:30px;margin-bottom:8px">✦ ✨</div>
+    <h2>Private Studio Access</h2>
+    <p>Enter the unique access code you received after purchasing Text Creation Studio.</p>
+    <input id="accessCode" type="text" autocomplete="off" placeholder="Enter your access code">
+    <button onclick="unlockStudio()">✨ Unlock Studio</button>
+    <div id="accessError" class="access-error"></div>
+    <a id="purchaseLink" class="access-link" target="_blank" rel="noopener">Purchase access →</a>
+    <p class="access-small">Your purchased access is intended to remain active after any temporary sale or Live event ends.</p>
+  </div>
+</div>
+
 <div class="wrap">
 
 <header class="header">
@@ -207,7 +234,7 @@ input:focus,select:focus{border-color:#ad6d84;box-shadow:0 0 0 3px #f2d9e0}
 <div class="range-wrap">
   <input id="variations" type="range" aria-label="Number of variations" min="1" max="4" step="1" value="1">
   <div class="range-labels"><span>1</span><span>2</span><span>3</span><span>4</span></div>
-  <div class="range-value"><span id="variationValue">4</span> variation<span id="variationPlural">s</span></div>
+  <div class="range-value"><span id="variationValue">1</span> variation<span id="variationPlural">s</span></div>
 </div>
 </section>
 
@@ -247,6 +274,52 @@ input:focus,select:focus{border-color:#ad6d84;box-shadow:0 0 0 3px #f2d9e0}
 
 </div>
 </div>
+
+
+<script>
+const BEACONS_PRODUCT_URL = 'https://shop.beacons.ai/digitalmuse_studio/6dab54d4-c7e1-4383-b3a1-eaefb4fdc3bf';
+const VERIFY_ENDPOINT = '/api/verify-access';
+
+async function verifyAccessCode(code){
+  try{
+    const response=await fetch(VERIFY_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code.trim()})});
+    if(!response.ok) return {ok:false};
+    return await response.json();
+  }catch(e){ return {ok:false, unavailable:true}; }
+}
+
+async function unlockStudio(){
+  const input=document.getElementById('accessCode');
+  const error=document.getElementById('accessError');
+  const button=document.querySelector('.access-box button');
+  const code=(input?.value||'').trim();
+  error.textContent='';
+  if(!code){error.textContent='Please enter your access code.';return;}
+  button.disabled=true; button.textContent='Checking access…';
+  const result=await verifyAccessCode(code);
+  button.disabled=false; button.textContent='✨ Unlock Studio';
+  if(result.ok){
+    document.body.classList.remove('locked');
+    document.body.classList.add('unlocked');
+    sessionStorage.setItem('dms_text_access','1');
+    document.getElementById('accessWall').style.display='none';
+  }else if(result.unavailable){
+    error.textContent='Access verification is not connected yet. Please try again after the Vercel API is deployed.';
+  }else{
+    error.textContent='That code is not recognized as active paid access.';
+  }
+}
+
+(function initAccessWall(){
+  const link=document.getElementById('purchaseLink');
+  if(link) link.href=BEACONS_PRODUCT_URL;
+  if(sessionStorage.getItem('dms_text_access')==='1'){
+    document.body.classList.remove('locked');
+    document.body.classList.add('unlocked');
+  }
+  document.getElementById('accessCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')unlockStudio();});
+})();
+</script>
 
 <script>
 const ids=['text','type','subject','effect','spacing','shape','letter','color','material','finish','background','composition','ratio','mockup','print','icons','addonsSelect','mascot','mascotAlign','figure','framing','details','quality','exclude'];
@@ -295,8 +368,8 @@ function getVariationCount(){
 
 function updateVariationUI(){
   const n=getVariationCount();
-  const out=document.getElementById('variationCount');
-  if(out) out.textContent=n+(n===1?' variation':' variations');
+  const out=document.getElementById('variationValue');
+  if(out) out.textContent=n;
   document.querySelectorAll('[data-variation-number]').forEach(el=>{
     el.classList.toggle('active',Number(el.dataset.variationNumber)===n);
   });
