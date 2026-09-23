@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Digital Muse Studio | Text Creation Studio</title>
+<style>
+:root{
+  --bg:#f8f4f8; --panel:#fff; --panel2:#fcf7fb; --ink:#3b2039;
+  --muted:#806e7d; --line:#e7dce7; --accent:#72435f; --accent2:#b978a2;
+  --soft:#f6eaf4; --soft2:#fbf1f8; --gold:#c7a16a; --focus:#9c5f86;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(135deg,#faf7fa 0%,#f7edf6 50%,#f9f5fa 100%);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+.topbar{
+  height:76px;background:#fff;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;padding:0 34px;
+  position:sticky;top:0;z-index:100;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{
+  width:48px;height:48px;border:1px solid var(--gold);border-radius:50%;
+  display:grid;place-items:center;font-weight:900;font-size:16px;color:#69425f;
+  background:linear-gradient(145deg,#f4e8fb,#fff0f7);
+}
+.brand-title{font-size:19px;font-weight:800;letter-spacing:-.2px}
+.brand-sub{font-size:10px;letter-spacing:.22em;color:var(--muted);margin-top:5px}
+.nav{display:flex;gap:25px;color:#806f7d;font-size:13px;align-items:center}
+.nav button{border:0;background:transparent;color:#806f7d;font-size:13px;padding:8px 2px;cursor:pointer}.nav button:hover,.nav button.active{color:var(--accent);font-weight:800}
+
+.wrap{max-width:1540px;margin:auto;padding:24px 28px 70px}
+.hero{
+  text-align:center;background:linear-gradient(180deg,#fff8fc 0%,#fff 100%);
+  border:1px solid var(--line);border-radius:24px 24px 0 0;
+  padding:30px 25px 25px;box-shadow:0 7px 22px #4b174b0a;
+}
+.mini-brand{font-family:Georgia,serif;letter-spacing:.28em;font-size:18px;color:#7e6575}
+.hero h1{font-family:Georgia,serif;font-size:55px;letter-spacing:.025em;margin:8px 0 12px;color:#432039}
+.hero p{margin:0;color:#826f7e;font-size:17px}
+.toolbar{display:flex;justify-content:center;gap:15px;flex-wrap:wrap;padding:18px 20px 20px;background:#fff;border-left:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.tool{
+  border:1px solid #decbdc;background:#fff;color:#4b3145;border-radius:16px;
+  padding:13px 24px;font-weight:800;box-shadow:0 3px 8px #4b174b08
+}
+.tool:hover{border-color:#b879a1;background:#fcf4fa}
+.tool.primary{background:#72435f;color:#fff;border-color:#72435f;box-shadow:0 6px 15px #72435f2b}
+.tool.primary:hover{background:#633950}
+.helper{font-size:12px;color:#8d7b89;text-align:center;background:#fff;padding:0 20px 18px;border-left:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0 0 24px 24px}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:22px;align-items:start;margin-top:22px}
+.main,.side-panel{
+  background:#fff;border:1px solid var(--line);border-radius:20px;
+  box-shadow:0 8px 28px #4b174b0d;overflow:visible;
+}
+.main-header{padding:20px 22px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#fff,#fcf5fb);border-radius:20px 20px 0 0}
+.main-header h2{margin:0;font-size:19px}.main-header p{margin:5px 0 0;color:var(--muted);font-size:12px}
+
+.section{padding:19px 20px;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:0;border-radius:0 0 20px 20px}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:13px}
+.section-title strong{font-size:12px;letter-spacing:.18em;color:#8d547d}
+.section-title span{font-size:10px;color:#9a8995}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{min-width:0;border:1px solid #eadfea;border-radius:13px;padding:12px;background:#fff;position:relative}
+.field.wide{grid-column:1/-1}
+.field-label{display:block;font-size:10px;font-weight:900;letter-spacing:.09em;color:#81506f;margin-bottom:8px}
+.select-wrap{position:relative}
+.select-button{
+  width:100%;height:39px;text-align:left;border:1px solid #d9cbd8;border-radius:9px;
+  background:#fff;color:#4b3347;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;
+  font-size:12px
+}
+.select-button:hover{border-color:#ba80a5}
+.select-button .arrow{color:#927a8c}
+.menu{
+  display:none;position:absolute;left:0;right:0;top:44px;z-index:80;
+  background:#fff;border:1px solid #d9cbd8;border-radius:10px;box-shadow:0 16px 35px #35142c25;
+  padding:6px;max-height:260px;overflow:auto
+}
+.menu.open{display:block}
+.menu-item{
+  display:flex;align-items:center;gap:7px;width:100%;border:0;background:#fff;
+  color:#4b3347;text-align:left;padding:7px 8px;border-radius:7px;font-size:11px
+}
+.menu-item:hover{background:#f6eaf4}
+.menu-item.selected{background:#f2e4f0;font-weight:800}
+.menu-item .tick{width:13px;color:transparent}.menu-item.selected .tick{color:#9b5d86}
+.custom{
+  width:100%;height:31px;margin-top:7px;border:1px solid #eadfea;border-radius:8px;
+  padding:0 9px;color:#4b3347;background:#fff;font-size:10px;outline:none
+}
+.custom:focus{border-color:#b879a1;box-shadow:0 0 0 3px #b879a11c}
+.include{
+  display:flex;align-items:center;gap:5px;margin-top:7px;color:#897887;font-size:9px;
+}
+.include input{width:14px;height:14px;accent-color:#8c537b}
+.selected{
+  min-height:28px;margin-top:7px;padding:6px 8px;border:1px dashed #e2d5e1;
+  border-radius:8px;background:#fcf9fc;color:#9a8995;font-size:9px;line-height:1.35
+}
+.selected strong{color:#71445f}
+.field.has-selection{border-color:#cda7c1;box-shadow:0 0 0 2px #cda7c115}
+.field.has-selection .selected{background:#f8edf6;border-style:solid;color:#6f4b65}
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pill{background:#f1e3ef;border:1px solid #dfc9dd;border-radius:999px;padding:4px 7px;font-size:9px;color:#6f4264}
+.pill button{border:0;background:none;color:#8e6382;padding:0;margin-left:3px}
+
+.side{position:sticky;top:95px;display:flex;flex-direction:column;gap:14px}
+.side-panel{overflow:hidden}
+.side-title{padding:16px 17px;border-bottom:1px solid var(--line);background:linear-gradient(90deg,#fff,#fcf4fa);font-size:14px;font-weight:900}
+.side-body{padding:15px 16px}
+.selection-box{display:flex;flex-wrap:wrap;gap:5px;min-height:44px}
+.selection-tag{background:#f7e9f4;border:1px solid #e2cde0;border-radius:8px;padding:6px 7px;font-size:9px;color:#6e4565}
+.empty{font-size:11px;color:#a3929f}
+.prompt-box{
+  min-height:190px;background:#fcf9fc;border:1px solid #e4d8e3;border-radius:11px;
+  padding:12px;font-size:10px;line-height:1.55;color:#55384e;white-space:pre-wrap
+}
+.side-actions{display:flex;gap:7px;margin-top:9px}.side-actions button{flex:1}
+.small-btn{border:1px solid #ddc9db;background:#fff;color:#6f4566;border-radius:8px;padding:8px;font-size:10px;font-weight:800}
+.small-btn.primary{background:#72435f;color:#fff;border-color:#72435f}
+.variation-list{display:grid;gap:7px}
+.variation{
+  border:1px solid #e4d8e3;border-radius:10px;padding:9px;background:#fff;
+  font-size:9px;color:#65445d
+}
+.variation b{display:block;color:#865273;margin-bottom:4px}
+.saved-note{font-size:9px;color:#9a8995;margin-top:7px}
+.mobile-note{display:none}
+
+
+.view{display:none}.view.active{display:block}
+.library{max-width:1500px;margin:0 auto;padding:48px 50px 70px}
+.library-kicker{font-size:11px;letter-spacing:.22em;color:#8d547d;font-weight:800}
+.library h2{font-family:Georgia,serif;font-size:52px;line-height:1.05;margin:12px 0;color:#32182f}
+.library p.lead{max-width:720px;color:#806e7d;font-size:15px;line-height:1.6}
+.library-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 8px 28px #4b174b0d;margin-top:28px}
+.library-actions{display:flex;gap:10px;justify-content:flex-end;margin-bottom:18px}.filter-btn{border:1px solid #decbdc;background:#fff;color:#6f4566;border-radius:999px;padding:9px 15px;font-weight:800}.filter-btn.active{background:#72435f;color:#fff}
+.saved-item{border:1px solid #eadfea;border-radius:16px;padding:18px;margin-top:12px;background:#fff}.saved-item h3{font-family:Georgia,serif;margin:0 0 7px}.saved-item p{margin:0;color:#806e7d;font-size:12px;line-height:1.5}.saved-item .row{display:flex;gap:8px;margin-top:12px}.empty-library{text-align:center;padding:80px 20px;color:#9a8995}.empty-library h3{font-family:Georgia,serif;color:#3b2039;font-size:24px}
+.variation-control{display:grid;gap:10px}.variation-range{width:100%;accent-color:#72435f}.variation-numbers{display:flex;justify-content:space-between;font-size:10px;color:#8d7b89}.variation-current{text-align:center;font-weight:900;color:#72435f;font-size:14px}
+
+@media(max-width:1050px){
+  .layout{grid-template-columns:1fr}.side{position:static}
+  .side{display:grid;grid-template-columns:1fr 1fr}
+  .side-panel:last-child{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .topbar{height:auto;padding:14px 16px;gap:12px}.nav{display:flex;gap:14px;overflow:auto;white-space:nowrap}
+  .wrap{padding:12px 10px 40px}.hero h1{font-size:34px}.mini-brand{font-size:13px}
+  .grid{grid-template-columns:1fr}.field.wide{grid-column:auto}
+  .side{display:flex}.toolbar{gap:8px}.tool{padding:11px 14px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">DM</div>
+    <div><div class="brand-title">Digital Muse Studio</div><div class="brand-sub">TEXT CREATION STUDIO</div></div>
+  </div>
+  <nav class="nav"><button type="button" data-view="studio">Studio</button><button type="button" data-view="favorites">Favorites</button><button type="button" data-view="history">History</button><button type="button" id="signOutBtn">Sign Out</button></nav>
+</header>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="mini-brand">DIGITAL MUSE STUDIO</div>
+    <h1>TEXT CREATION STUDIO</h1>
+    <p>Create powerful, creative prompts for your art</p>
+  </section>
+
+  <div class="toolbar">
+    <button class="tool" id="textBtn">✦ Text</button>
+    <button class="tool" id="randomBtn">🎲 Smart Randomize</button>
+    <button class="tool" id="resetBtn">↻ Reset</button>
+    <button class="tool primary" id="generateBtn">✨ Generate Prompt</button>
+  </div>
+  <div class="helper">✨ Smart Randomize builds a coordinated design direction instead of mixing unrelated choices.</div>
+
+  <div class="layout">
+    <main class="main">
+      <div class="main-header">
+        <h2>Prompt Builder</h2>
+        <p>Choose exactly what you want. Selections remain visible here and in <b>Your Selections</b>.</p>
+      </div>
+
+      <section class="section">
+        <div class="section-title"><strong>BASIC DESIGN</strong><span>Start with the core design direction</span></div>
+        <div class="grid">
+          <div class="field wide" id="field-text">
+            <label class="field-label">TEXT / PHRASE</label>
+            <input class="custom" id="textInput" style="margin-top:0;height:39px;font-size:12px" placeholder="Enter the exact phrase you want to design...">
+            <div class="selected" id="sel-text">CURRENTLY SELECTED: <strong>None</strong></div>
+            <label class="include"><input id="textInclude" type="checkbox"> Include in prompt</label>
+          </div>
+          <div class="field" data-field="designType"></div>
+          <div class="field" data-field="theme"></div>
+          <div class="field" data-field="effect"></div>
+          <div class="field" data-field="lettering"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><strong>TYPOGRAPHY</strong><span>Control the text structure</span></div>
+        <div class="grid">
+          <div class="field" data-field="spacing"></div>
+          <div class="field" data-field="shape"></div>
+          <div class="field" data-field="stack"></div>
+          <div class="field" data-field="font"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><strong>LET'S STYLE IT</strong><span>Choose freely — Custom is available</span></div>
+        <div class="grid">
+          <div class="field" data-field="colors"></div>
+          <div class="field" data-field="background"></div>
+          <div class="field" data-field="aspect"></div>
+          <div class="field" data-field="framing"></div>
+          <div class="field" data-field="material"></div>
+          <div class="field" data-field="texture"></div>
+          <div class="field" data-field="pattern"></div>
+          <div class="field" data-field="outline"></div>
+          <div class="field" data-field="shadow"></div>
+          <div class="field" data-field="lighting"></div>
+          <div class="field" data-field="special"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><strong>EXTRAS</strong><span>Optional details and multi-selection</span></div>
+        <div class="grid">
+          <div class="field" data-field="icons"></div>
+          <div class="field" data-field="mockup"></div>
+          <div class="field" data-field="addons"></div>
+          <div class="field" data-field="mascots"></div>
+          <div class="field" data-field="characters"></div>
+          <div class="field" data-field="quality"></div>
+          <div class="field wide" data-field="negative"></div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="side">
+      <section class="side-panel">
+        <div class="side-title">✨ Your Selections</div>
+        <div class="side-body"><div id="summary" class="selection-box"><span class="empty">Your selections will appear here as you choose them.</span></div></div>
+      </section>
+
+      <section class="side-panel">
+        <div class="side-title">Generated Prompt</div>
+        <div class="side-body">
+          <div id="prompt" class="prompt-box">Your generated prompt will appear here.</div>
+          <div class="side-actions">
+            <button class="small-btn" id="copyBtn">Copy</button>
+            <button class="small-btn" id="saveBtn">Save Current</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="side-panel">
+        <div class="side-title">Variations</div>
+        <div class="side-body variation-control">
+          <div id="variationCurrent" class="variation-current">1 variation</div>
+          <input id="variationSlider" class="variation-range" type="range" min="1" max="4" step="1" value="1" aria-label="Number of variations">
+          <div class="variation-numbers"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+          <div class="saved-note">Choose how many prompt variations Generate Prompt creates.</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<section id="favoritesView" class="view library">
+  <div class="library-kicker">YOUR LIBRARY</div>
+  <h2>Saved &amp; favorites</h2>
+  <p class="lead">Prompts you kept, with the full builder state behind each one. Open a prompt to edit its selections in the studio.</p>
+  <div class="library-actions"><button class="filter-btn active" data-filter="all">All <span id="allCount">0</span></button><button class="filter-btn" data-filter="favorites">☆ Favorites <span id="favCount">0</span></button></div>
+  <div id="favoritesList" class="library-card"></div>
+</section>
+
+<section id="historyView" class="view library">
+  <div class="library-kicker">YOUR HISTORY</div>
+  <h2>History</h2>
+  <p class="lead">Recently generated prompts from this browser.</p>
+  <div id="historyList" class="library-card"></div>
+</section>
+
+<script>
+const fields = {
+designType:{label:"Design Type",multi:false,opts:["Typography Design","Quote Design","Graphic Design","Logo Design","Sticker Design","Poster Design","T-shirt Design","POD Design"]},
+theme:{label:"Theme / Subject",multi:false,opts:["Faith","Mom Life","Motivational","Zodiac","Humor","Business","Money","Soft Life","Sports","Holiday","Kawaii","Custom"]},
+effect:{label:"Typography Effect",multi:false,opts:["None","High Gloss","Bubble / Puffy","3D","Dripping Liquid Letters","Chrome","Glitter","Distressed Vintage","Metallic Foil","Embossed","Inflated","Retro Print"]},
+lettering:{label:"Letter Styling",multi:true,opts:["Bold","Script","Chunky","Kawaii","Varsity","Elegant","Playful","Retro","Handwritten","Serif","Sans Serif"]},
+spacing:{label:"Text Spacing",multi:false,opts:["Ultra Tight","Slightly Tight","Balanced","Airy","Ultra Wide"]},
+shape:{label:"Word Shape",multi:false,opts:["Straight Line","Arched","Wave","Circular","Vertical Stack","Pyramid","Scattered","Spiral","Zig-Zag","Explosion Layout"]},
+stack:{label:"Word Stack",multi:false,opts:["None","Single Line","Multi Line","Stacked","Offset Stack","Line Per Word"]},
+font:{label:"Font Style",multi:false,opts:["Modern Sans Serif","Bold Athletic","Retro Collegiate","Luxury Editorial","Western","Playful Rounded","Handwritten","Script","Bubble","Groovy"]},
+colors:{label:"Color Scheme",multi:false,opts:["Pink","Purple","Lavender","Blue","Deep Navy","Gold","Rose Gold","Black & White","Pastel","Earth Tones","Neon","Custom"]},
+background:{label:"Background",multi:false,opts:["Clean White","Transparent","Black","Cream","Pastel Pink","Soft Gradient","Textured","Custom"]},
+aspect:{label:"Aspect Ratio",multi:false,opts:["1:1","3:4","4:5","2:3","9:16","16:9","Custom"]},
+framing:{label:"Framing",multi:false,opts:["None","Square Frame","Arch Frame","Circle Frame","Badge","Border","Oval Frame"]},
+material:{label:"Material / Texture",multi:true,opts:["Leather","Foil","Suede","Rubber","Marble","Glitter","Denim","Canvas","Chrome","Metallic","Felt"]},
+texture:{label:"Texture",multi:false,opts:["Smooth","Grainy","Distressed","Embossed","Puffy","Cracked","Soft Fabric","Paper Texture","Glitter Dust"]},
+pattern:{label:"Pattern",multi:false,opts:["None","Stripes","Checkerboard","Animal Print","Polka Dots","Floral","Stars","Hearts","Camo","Plaid","Swirls"]},
+outline:{label:"Outline",multi:false,opts:["None","Thin Outline","Thick Outline","Double Outline","Rhinestone Outline","Foil Outline","White Outline","Black Outline"]},
+shadow:{label:"Shadow",multi:false,opts:["None","Soft Shadow","Drop Shadow","Long Shadow","Offset Shadow","3D Shadow","Glow Shadow"]},
+lighting:{label:"Lighting",multi:false,opts:["None","Soft Glow","Studio Lighting","Dramatic Lighting","Neon Glow","Sparkle Lighting","Gloss Highlight"]},
+special:{label:"Special Effects",multi:true,opts:["None","Sparkles","Bling","Rhinestones","Glow","Liquid Shine","Smoke","Dust","Confetti","Light Rays"]},
+icons:{label:"Icon Elements",multi:true,opts:["None","Hearts","Sparkles","Stars","Flowers","Bows","Diamonds","90s Hip Hop","Zodiac","Kawaii","Makeup","Basketballs","Footballs","Baseballs","Tape Pieces","Rhinestones","School Supplies","Candy","Mouse Cursors","Paper Clips","Glitter Dust","Crowns","Crosses","Dice","Money Bags","Music Notes"]},
+mockup:{label:"Mockup View",multi:false,opts:["None","T-shirt","Hoodie","Mug","Tote Bag","Sticker Sheet","Wall Art","Phone","Notebook"]},
+addons:{label:"Add-Ons",multi:true,opts:["None","Thin Outline","Thick Black Outline","Foil Details","Rhinestone Details","Distressed Texture","Sparkle Accents","Bows","Glitter Accents","Sticker Border"]},
+mascots:{label:"Mascot Add-Ons",multi:true,opts:["None","Business Mascot","Cute Mascot","Animal Mascot","Kawaii Mascot","Pumpkin Mascot","Cowgirl Mascot","Bear Mascot","Custom"]},
+characters:{label:"Character / Figure Add-Ons",multi:true,opts:["None","Business Figure","Woman Figure","Man Figure","Mom Figure","Girl Figure","Boy Figure","Cowgirl Character","Cowboy Character","Chibi Figure","Custom"]},
+quality:{label:"Render / Print Quality",multi:false,opts:["POD Ready","DTF Ready","Print Ready","Crisp Edges","High Detail","High Resolution","Transparent Background","Glossy Finish","Matte Finish"]},
+negative:{label:"Negative Prompt / Exclude",multi:false,opts:["No Watermark","No Extra Words","No Misspellings","No Cropped Elements","No Cut-Off Text","No Blurry Text","No Unwanted Characters","No Logos","No Background Clutter"]}
+};
+
+const state={};
+const $=id=>document.getElementById(id);
+
+function createField(key,config){
+  const el=document.querySelector(`[data-field="${key}"]`);
+  el.innerHTML=`
+    <label class="field-label">${config.label}</label>
+    <div class="select-wrap">
+      <button type="button" class="select-button"><span class="value">Choose ${config.multi?"options":"an option"}</span><span class="arrow">⌄</span></button>
+      <div class="menu"></div>
+    </div>
+    <input class="custom" placeholder="${config.label==="Color Scheme"?"Custom colors (name / HEX / RGB)":"Enter custom value..."}">
+    <div class="pills"></div>
+    <div class="selected">CURRENTLY SELECTED: <strong>None</strong></div>
+    <label class="include"><input type="checkbox"> Include in prompt</label>
+  `;
+  const menu=el.querySelector(".menu");
+  config.opts.forEach(opt=>{
+    const b=document.createElement("button");b.type="button";b.className="menu-item";
+    b.dataset.value=opt;b.innerHTML=`<span class="tick">✓</span>${opt}`;
+    b.onclick=e=>{e.stopPropagation();toggleValue(key,opt,b)};
+    menu.appendChild(b);
+  });
+  el.querySelector(".select-button").onclick=e=>{
+    e.stopPropagation();
+    document.querySelectorAll(".menu.open").forEach(m=>{if(m!==menu)m.classList.remove("open")});
+    menu.classList.toggle("open");
+  };
+  el.querySelector(".custom").addEventListener("input",()=>{update(key)});
+  el.querySelector(".include").addEventListener("click",e=>e.stopPropagation());
+}
+
+Object.entries(fields).forEach(([k,v])=>createField(k,v));
+
+function toggleValue(key,value,button){
+  const cfg=fields[key]; state[key]??=[];
+  if(cfg.multi){
+    if(state[key].includes(value)){state[key]=state[key].filter(x=>x!==value);button.classList.remove("selected")}
+    else{state[key].push(value);button.classList.add("selected")}
+  }else{
+    state[key]=[value];
+    button.parentElement.querySelectorAll(".menu-item").forEach(x=>x.classList.remove("selected"));
+    button.classList.add("selected");
+    button.closest(".menu").classList.remove("open");
+  }
+  update(key); updateAll();
+}
+
+function customValue(key){
+  const v=document.querySelector(`[data-field="${key}"] .custom`)?.value.trim();
+  return v?[v]:[];
+}
+function values(key){
+  return [...(state[key]||[]),...customValue(key)];
+}
+function display(key){
+  const v=values(key);
+  return v.length?v.join(", "):"None";
+}
+function update(key){
+  const el=document.querySelector(`[data-field="${key}"]`);
+  if(!el)return;
+  const v=values(key);
+  el.classList.toggle("has-selection",v.length>0);
+  const valueEl=el.querySelector(".value");
+  valueEl.textContent=v.length?v.join(", "):`Choose ${fields[key].multi?"options":"an option"}`;
+  el.querySelector(".selected strong").textContent=display(key);
+  const pills=el.querySelector(".pills");pills.innerHTML="";
+  v.forEach((x,i)=>{
+    const p=document.createElement("span");p.className="pill";p.textContent=x;
+    const b=document.createElement("button");b.type="button";b.textContent="×";
+    b.onclick=e=>{e.stopPropagation();removeValue(key,x,i);};
+    p.appendChild(b);pills.appendChild(p);
+  });
+}
+function removeValue(key,x,i){
+  if(state[key]?.includes(x)){state[key]=state[key].filter(v=>v!==x);
+    document.querySelectorAll(`[data-field="${key}"] .menu-item`).forEach(b=>{if(b.dataset.value===x)b.classList.remove("selected")});
+  }else{
+    const input=document.querySelector(`[data-field="${key}"] .custom`); if(input)input.value="";
+  }
+  update(key);updateAll();
+}
+function updateAll(){
+  const summary=$("summary");summary.innerHTML="";
+  let count=0;
+  const text=$("textInput").value.trim();
+  if(text){addTag("Text: "+text);count++}
+  Object.entries(fields).forEach(([k,c])=>{
+    const v=values(k);
+    if(v.length){addTag(c.label+": "+v.join(", "));count++}
+  });
+  if(!count)summary.innerHTML='<span class="empty">Your selections will appear here as you choose them.</span>';
+}
+function addTag(t){const s=document.createElement("span");s.className="selection-tag";s.textContent=t;$("summary").appendChild(s)}
+$("textInput").addEventListener("input",()=>{
+  const v=$("textInput").value.trim();$("sel-text").innerHTML=`CURRENTLY SELECTED: <strong>${v||"None"}</strong>`;
+  $("field-text").classList.toggle("has-selection",!!v);updateAll();
+});
+
+document.addEventListener("click",()=>document.querySelectorAll(".menu.open").forEach(m=>m.classList.remove("open")));
+
+function include(key){
+  return document.querySelector(`[data-field="${key}"] .include input`)?.checked;
+}
+function buildPrompt(){
+  const text=$("textInput").value.trim();
+  let lines=[];
+  if(text && $("textInclude").checked)lines.push(`Create a professional POD-ready text design featuring the exact phrase "${text}".`);
+  for(const [k,c] of Object.entries(fields)){
+    if(!include(k))continue;
+    const v=values(k);
+    if(v.length)lines.push(`${c.label}: ${v.join(", ")}.`);
+  }
+  lines.push("Keep the selected design direction cohesive, polished, readable, professionally composed, and print-ready. Do not add unwanted words, watermarks, logos, misspellings, blurry lettering, or unrelated elements.");
+  return lines.join(" ");
+}
+
+function generate(){
+  const count=parseInt($("variationSlider").value,10)||1;
+  const base=buildPrompt();
+  const suffix=[
+    "",
+    " Keep the composition clean and balanced with strong visual hierarchy.",
+    " Make the lettering especially crisp and legible while preserving every selected style choice.",
+    " Add polished visual depth and professional print presentation without changing the requested concept."
+  ];
+  const list=[];
+  for(let i=1;i<=count;i++)list.push({n:i,text:base+suffix[i-1]});
+  $("prompt").textContent=list.map(x=>`VARIATION ${x.n}\n${x.text}`).join("\n\n");
+  $("prompt").classList.remove("empty");
+  addHistory(base,count);
+}
+
+$("generateBtn").onclick=generate;
+$("textBtn").onclick=()=>{document.getElementById("textInput").focus();document.getElementById("textInput").scrollIntoView({behavior:"smooth",block:"center"})};
+
+$("resetBtn").onclick=()=>{
+  Object.keys(state).forEach(k=>delete state[k]);
+  $("textInput").value="";$("textInclude").checked=false;
+  document.querySelectorAll(".menu-item").forEach(b=>b.classList.remove("selected"));
+  document.querySelectorAll(".custom").forEach(i=>i.value="");
+  document.querySelectorAll(".include input").forEach(i=>i.checked=false);
+  document.querySelectorAll(".field").forEach(f=>f.classList.remove("has-selection"));
+  Object.keys(fields).forEach(update);
+  $("sel-text").innerHTML="CURRENTLY SELECTED: <strong>None</strong>";
+  $("summary").innerHTML='<span class="empty">Your selections will appear here as you choose them.</span>';
+  $("prompt").textContent="Your generated prompt will appear here.";
+  $("prompt").classList.add("empty");
+  $("variationSlider").value=1; updateVariationLabel();
+};
+
+$("randomBtn").onclick=()=>{
+  $("resetBtn").click();
+  const sets=[
+    ["designType",["Typography Design"]],["theme",["Mom Life","Motivational"]],
+    ["effect",["3D","Bubble / Puffy"]],["lettering",["Bold","Script"]],
+    ["spacing",["Balanced"]],["shape",["Arched"]],["stack",["Multi Line"]],
+    ["colors",["Purple","Gold"]],["background",["Clean White"]],["aspect",["3:4"]],
+    ["framing",["Arch Frame"]],["addons",["Thin Outline","Rhinestone Details"]]
+  ];
+  sets.forEach(([k,arr])=>arr.forEach(v=>{
+    const b=[...document.querySelectorAll(`[data-field="${k}"] .menu-item`)].find(x=>x.dataset.value===v);
+    if(b&&!state[k]?.includes(v))toggleValue(k,v,b);
+  }));
+  updateAll();
+};
+
+$("copyBtn").onclick=async()=>{
+  const txt=$("prompt").textContent;
+  try{await navigator.clipboard.writeText(txt);$("copyBtn").textContent="Copied ✓";setTimeout(()=>$("copyBtn").textContent="Copy",1100)}catch(e){}
+};
+$("saveBtn").onclick=()=>{
+  const txt=$("prompt").textContent;
+  if(!txt||txt==="Your generated prompt will appear here.")return;
+  const arr=JSON.parse(localStorage.getItem("dmsSaved")||"[]");
+  arr.unshift({id:Date.now(),text:txt});localStorage.setItem("dmsSaved",JSON.stringify(arr.slice(0,20)));renderSaved();
+};
+function renderSaved(){
+  const arr=JSON.parse(localStorage.getItem("dmsSaved")||"[]");
+  if(!arr.length){$("saved").textContent="No saved prompts yet.";return}
+  $("saved").innerHTML=arr.map(x=>`<div class="variation"><b>Saved Prompt</b>${x.text.slice(0,180)}${x.text.length>180?"…":""}</div>`).join("");
+}
+renderSaved();
+updateAll();
+function updateVariationLabel(){const n=parseInt($("variationSlider").value,10)||1;$("variationCurrent").textContent=`${n} variation${n===1?"":"s"}`;}
+$("variationSlider").addEventListener("input",updateVariationLabel);updateVariationLabel();
+
+function getSaved(){try{return JSON.parse(localStorage.getItem("dms_text_saved")||"[]")}catch(e){return[]}}
+function setSaved(v){localStorage.setItem("dms_text_saved",JSON.stringify(v))}
+function getHistory(){try{return JSON.parse(localStorage.getItem("dms_text_history")||"[]")}catch(e){return[]}}
+function setHistory(v){localStorage.setItem("dms_text_history",JSON.stringify(v.slice(0,30)))}
+function snapshot(){const out={text:$("textInput").value, textInclude:$("textInclude").checked, state:{}, custom:{}, includes:{}};Object.keys(fields).forEach(k=>{out.state[k]=[...(state[k]||[])];out.custom[k]=document.querySelector(`[data-field="${k}"] .custom`)?.value||"";out.includes[k]=!!include(k)});out.variations=parseInt($("variationSlider").value,10)||1;return out}
+function restoreSnapshot(s){$("resetBtn").click();$("textInput").value=s.text||"";$("textInclude").checked=!!s.textInclude;Object.keys(fields).forEach(k=>{const arr=(s.state&&s.state[k])||[];arr.forEach(v=>{const b=[...document.querySelectorAll(`[data-field="${k}"] .menu-item`)].find(x=>x.dataset.value===v);if(b)toggleValue(k,v,b)});const inp=document.querySelector(`[data-field="${k}"] .custom`);if(inp)inp.value=(s.custom&&s.custom[k])||"";const inc=document.querySelector(`[data-field="${k}"] .include input`);if(inc)inc.checked=!!(s.includes&&s.includes[k]);update(k)});$("variationSlider").value=s.variations||1;updateVariationLabel();updateAll();showView("studio");}
+function addHistory(prompt,count){const h=getHistory();h.unshift({id:Date.now(),prompt,count,created:new Date().toLocaleString(),snapshot:snapshot()});setHistory(h);renderHistory();}
+function renderFavorites(filter="all"){const all=getSaved();$("allCount").textContent=all.length;$("favCount").textContent=all.filter(x=>x.favorite).length;const list=filter==="favorites"?all.filter(x=>x.favorite):all;const box=$("favoritesList");if(!list.length){box.innerHTML='<div class="empty-library"><h3>Nothing saved yet</h3><p>Build a direction in the studio and press Save Current.</p><button class="small-btn primary" onclick="showView(&quot;studio&quot;)">Open the studio</button></div>';return}box.innerHTML=list.map(x=>`<div class="saved-item"><h3>${escapeHtml(x.title||"Saved prompt")}</h3><p>${escapeHtml(x.prompt)}</p><div class="row"><button class="small-btn primary" onclick="restoreSaved(${x.id})">Open in studio</button><button class="small-btn" onclick="toggleFavorite(${x.id})">${x.favorite?'★ Favorited':'☆ Favorite'}</button></div></div>`).join("")}
+function renderHistory(){const list=getHistory();const box=$("historyList");if(!list.length){box.innerHTML='<div class="empty-library"><h3>No history yet</h3><p>Generate a prompt in the studio and it will appear here.</p></div>';return}box.innerHTML=list.map(x=>`<div class="saved-item"><h3>${escapeHtml(x.created)}</h3><p>${escapeHtml(x.prompt)}</p><div class="row"><button class="small-btn primary" onclick="restoreHistory(${x.id})">Open in studio</button></div></div>`).join("")}
+function escapeHtml(v){return String(v||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]))}
+function restoreSaved(id){const x=getSaved().find(y=>y.id===id);if(x)restoreSnapshot(x.snapshot)}
+function restoreHistory(id){const x=getHistory().find(y=>y.id===id);if(x)restoreSnapshot(x.snapshot)}
+function toggleFavorite(id){const a=getSaved();const x=a.find(y=>y.id===id);if(x){x.favorite=!x.favorite;setSaved(a);renderFavorites(currentFilter)}}
+let currentFilter="all";
+function showView(view){document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));const studio=document.querySelector(".wrap");if(view==="studio"){studio.style.display="block"}else{studio.style.display="none";$(view+"View").classList.add("active")}document.querySelectorAll(".nav button[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));if(view==="favorites")renderFavorites(currentFilter);if(view==="history")renderHistory();window.scrollTo({top:0,behavior:"smooth"})}
+document.querySelectorAll(".nav button[data-view]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));$("signOutBtn").addEventListener("click",()=>{try{sessionStorage.clear()}catch(e){};showView("studio");alert("Signed out. Please enter your access code again to continue.")});document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{currentFilter=b.dataset.filter;document.querySelectorAll(".filter-btn").forEach(x=>x.classList.toggle("active",x===b));renderFavorites(currentFilter)}));
+
+$("saveBtn").onclick=()=>{const p=$("prompt").textContent.trim();if(!p||p==="Your generated prompt will appear here.")return;const a=getSaved();a.unshift({id:Date.now(),title:$("textInput").value.trim()||"Saved prompt",prompt:p,favorite:false,snapshot:snapshot()});setSaved(a);renderFavorites(currentFilter);$("saveBtn").textContent="✓ Saved";setTimeout(()=>$("saveBtn").textContent="Save Current",1000)};
+renderFavorites();renderHistory();
+
+</script>
+</body>
+</html>
